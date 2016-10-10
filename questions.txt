@@ -1,0 +1,35 @@
+Todo:
+1.wdctl命令行可以控制日志级别。                  --fixed
+2.换版本后SSH重连不上。                          --fixed
+3.server或者agent不通的情况下放行用户。          --fixed
+4.ringbuf问题。                                  --fixed
+5.tcpStoreData解析要增加支持json。               --fixed
+6.客户数量统计对不上。                           --fixed
+7.tool stack: cppunit, robot, jeakins。          --pending
+8.ep, pthread_setspecific。                      --fixed
+9.三次http断                                     --fixed
+10.iptable异常处理                               --fixed
+11.https support.                                --pending
+12.server断时用户上网，改为用iptables组解决。    --pending
+13.wifidog port proxy                            --pending
+14.DPI：libnids, snort, suricata, opendpi        --pending
+https://www.snort.org/
+http://bbs.chinaunix.net/thread-1943857-1-1.html
+
+15.DPI增值服务：免费上网功能只提供基本的普通上网功能，有一些限制：
+包括site限制，app限制，网速限制等；
+对于一些特殊的网站(比如youku，爱奇艺等视频网站)，应用(比如收发邮件)，网速提速等特别需求，需要收费
+收费方式可以通过重定向推送收费二维码，定制页面等方式。
+
+
+139.224.30.94  RRB@tq20140916!
+
+
+
+
+
+
+
+
+
+

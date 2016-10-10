@@ -1,0 +1,1 @@
+http://localhost:8080/WIFI_YUN/system/wifi/download/place_code/version
