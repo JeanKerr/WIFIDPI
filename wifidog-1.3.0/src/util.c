@@ -362,7 +362,7 @@ bool get_ext_iface_name(char* extPortBuf, int bufLen)
     }
     else
     {
-        return get_ext_iface(extPortBuf, sizeof(bufLen));
+        return get_ext_iface(extPortBuf, bufLen);
     }
 }
 
