@@ -25,7 +25,6 @@
   @author Copyright (C) 2015 Alexandre Carmel-Veilleux <acv@miniguru.ca>
  */
 
-#define _GNU_SOURCE
 #include "common.h"
 
 #include "gateway.h"

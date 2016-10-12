@@ -26,7 +26,6 @@
   @author Copyright (C) 2004 Philippe April <papril777@yahoo.com>
  */
 
-#define _GNU_SOURCE
 #include "common.h"
 
 #include <sys/socket.h>

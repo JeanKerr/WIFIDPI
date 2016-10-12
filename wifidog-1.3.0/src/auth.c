@@ -25,7 +25,6 @@
     @author Copyright (C) 2004 Alexandre Carmel-Veilleux <acv@miniguru.ca>
 */
 
-#define _GNU_SOURCE
 #include "common.h"
 
 #include <sys/types.h>

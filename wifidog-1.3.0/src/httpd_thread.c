@@ -25,23 +25,13 @@
     @author Copyright (C) 2004 Alexandre Carmel-Veilleux <acv@acv.ca>
 */
 
-#define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-#include <unistd.h>
-#include <syslog.h>
-#include <signal.h>
-#include <errno.h>
-
-#include "httpd.h"
-
-#include "../config.h"
 #include "common.h"
+
 #include "debug.h"
 #include "httpd_thread.h"
+#include "httpd.h"
+#include "../config.h"
 
 static void http_errcode_process(request* r, int err)
 {

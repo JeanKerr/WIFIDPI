@@ -28,7 +28,6 @@
 
  */
 /* Note that libcs other than GLIBC also use this macro to enable vasprintf */
-#define _GNU_SOURCE
 #include "common.h"
 
 #include <sys/types.h>

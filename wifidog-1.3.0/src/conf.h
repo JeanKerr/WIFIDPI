@@ -70,6 +70,8 @@
 #define DEFAULT_AUTHSERVPORT 8080
 #define DEFAULT_AUTHSERVSSLPORT 443
 
+#define DEFAULT_DPI_BPFFILTER "udp port 53"
+
 /** Note that DEFAULT_AUTHSERVSSLAVAILABLE must be 0 or 1, even if the config file syntax is yes or no */
 #define DEFAULT_AUTHSERVSSLAVAILABLE 0
 /** Note:  The path must be prefixed by /, and must be suffixed /.  Put / for the server root.*/
@@ -288,7 +290,8 @@ typedef struct {
     char semu_portal_ip[MAX_IP_ADDR_LEN];            /**< @brief boolean, whether to enable semu portal ip */
     char httpdname[MAX_GENERAL_LEN];                 /**< @brief Name the web server will return when replying to a request */
     char version[MAX_GENERAL_LEN];
-
+    char dpi_bpf[MAX_GENERAL_LEN];                   /**< @brief DPI BPF filter */
+    char dpi_log_file[MAX_PATH_LEN];
     t_net_conn_mgmt_t  net_conn;
     t_auth_serv_mgmt_t auth_servers;                       /**< @brief Auth servers list */
     t_auth_serv_mgmt_t auth_agents;                  /**< @brief Auth agents list */
@@ -296,24 +299,25 @@ typedef struct {
     t_trusted_mac* trustedmaclist;                   /**< @brief list of trusted macs */
     t_popular_server* popular_servers;               /**< @brief list of popular servers */
 
-    int gw_port;                                    /**< @brief Port the webserver will run on */
-    int httpdmaxconn;                               /**< @brief Used by libhttpd, not sure what it does */
-    int deltatraffic;                               /**< @brief reset each user's traffic (Outgoing and Incoming) value after each Auth operation. */
-    int daemon;                                     /**< @brief if daemon > 0, use daemon mode */
-    int external_web_port;                          /**< @brief Port the external service to serve letgo interface will run on */
-    int max_client_num;                             /**< @brief Maximum client number a device can support */
-    int clienttimeout;                              /**< @brief How many CheckIntervals before a client must be re-authenticated */
-    int checkinterval;                              /**< @brief Frequency the the client timeout check thread will run. */
-    int proxy_port;                                 /**< @brief Transparent proxy port (0 to disable) */
-    int ssl_verify;                                 /**< @brief boolean, whether to enable auth server certificate verification */
-    int ssl_use_sni;                                /**< @brief boolean, whether to enable auth server for server name indication, the TLS extension */
+    int gw_port;                                     /**< @brief Port the webserver will run on */
+    int httpdmaxconn;                                /**< @brief Used by libhttpd, not sure what it does */
+    int deltatraffic;                                /**< @brief reset each user's traffic (Outgoing and Incoming) value after each Auth operation. */
+    int daemon;                                      /**< @brief if daemon > 0, use daemon mode */
+    int external_web_port;                           /**< @brief Port the external service to serve letgo interface will run on */
+    int max_client_num;                              /**< @brief Maximum client number a device can support */
+    int clienttimeout;                               /**< @brief How many CheckIntervals before a client must be re-authenticated */
+    int checkinterval;                               /**< @brief Frequency the the client timeout check thread will run. */
+    int proxy_port;                                  /**< @brief Transparent proxy port (0 to disable) */
+    int ssl_verify;                                  /**< @brief boolean, whether to enable auth server certificate verification */
+    int ssl_use_sni;                                 /**< @brief boolean, whether to enable auth server for server name indication, the TLS extension */
 #if USE_TCP_SOCK
     int tcp_sock;
 #endif
     int company_id;
-    int sms_flag;                                   /**< @brief boolean, whether to enable sms */
-    int local_auth_flag;                            /**< @brief boolean, whether to enable local auth */
-    int semu_flag;                                  /**< @brief boolean, whether to enable semu */
+    int sms_flag;                                    /**< @brief boolean, whether to enable sms */
+    int local_auth_flag;                             /**< @brief boolean, whether to enable local auth */
+    int semu_flag;                                   /**< @brief boolean, whether to enable semu */
+    int dpi_flag;                                    /**< @brief DPI function flag */
 } T_CONFIG;
 
 /** @brief Get the current gateway configuration */

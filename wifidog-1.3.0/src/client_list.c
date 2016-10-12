@@ -24,7 +24,6 @@
   @author Copyright (C) 2004 Alexandre Carmel-Veillex <acv@acv.ca>
  */
 
-#define _GNU_SOURCE
 #include "common.h"
 
 #include <sys/wait.h>

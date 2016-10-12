@@ -18,32 +18,16 @@
  *
  */
 
-#ifdef linux
-#define _GNU_SOURCE
+#include "common.h"
 #include <sched.h>
-#endif
-#include <stdio.h>
-#include <stdlib.h>
-#ifdef WIN32
-#include <winsock2.h> /* winsock.h is included automatically */
-#include <process.h>
-#include <io.h>
-#include <getopt.h>
-#define getopt getopt____
-#else
-#include <unistd.h>
 #include <netinet/in.h>
-#endif
-#include <string.h>
-#include <stdarg.h>
 #include <search.h>
 #include <pcap.h>
-#include <signal.h>
-#include <pthread.h>
 #include <sys/socket.h>
 #include <assert.h>
 #include "../config.h"
 #include "ndpi_api.h"
+#include "debug.h"
 
 #ifdef HAVE_JSON_C
 #include <json.h>
@@ -70,8 +54,9 @@ static u_int8_t undetected_flows_deleted = 0;
 static u_int8_t enable_protocol_guess = 1, verbose = 0, nDPI_traceLevel = 0, json_flag = 0;
 static u_int16_t decode_tunnels = 0;
 static u_int16_t num_loops = 1;
-static u_int8_t shutdown_app = 0, quiet_mode = 0;
+static u_int8_t quiet_mode = 1;
 static u_int8_t num_threads = 1;
+int RunRhyDpi = 0;
 #ifdef linux
 static int core_affinity[MAX_NUM_READER_THREADS];
 #endif
@@ -1033,7 +1018,7 @@ void dpisigproc(int sig) {
   int thread_id;
 
   if(called) return; else called = 1;
-  shutdown_app = 1;
+  RunRhyDpi = 0;
 
   for(thread_id=0; thread_id<num_threads; thread_id++)
     breakPcapLoop(thread_id);
@@ -1201,7 +1186,7 @@ static void pcap_packet_callback_checked(u_char *args,
  */
 static void runPcapLoop(u_int16_t thread_id) {
 
-  if((!shutdown_app) && (ndpi_thread_info[thread_id].workflow->pcap_handle != NULL))
+  if((RunRhyDpi) && (ndpi_thread_info[thread_id].workflow->pcap_handle != NULL))
     pcap_loop(ndpi_thread_info[thread_id].workflow->pcap_handle, -1, &pcap_packet_callback_checked, (u_char*)&thread_id);
 }
 
@@ -1301,34 +1286,25 @@ void automataUnitTest() {
 }
 
 /**
-   @brief MAIN FUNCTION
+   @brief DPI MAIN FUNCTION
  **/
 int dpi_main(int argc, char **argv) {
 
   int i;
 
-  automataUnitTest();
+  //automataUnitTest();
 
   memset(ndpi_thread_info, 0, sizeof(ndpi_thread_info));
   memset(&pcap_start, 0, sizeof(pcap_start));
   memset(&pcap_end, 0, sizeof(pcap_end));
 
   parseOptions(argc, argv);
-
-  if((!json_flag) && (!quiet_mode)) {
-    printf("\n-----------------------------------------------------------\n"
-	   "* NOTE: This is demo app to show *some* nDPI features.\n"
-	   "* In this demo we have implemented only some basic features\n"
-	   "* just to show you what you can do with the library. Feel \n"
-	   "* free to extend it and send us the patches for inclusion\n"
-	   "------------------------------------------------------------\n\n");
-
-    printf("Using nDPI (%s) [%d thread(s)]\n", ndpi_revision(), num_threads);
-  }
+  
+  debug(LOG_INFO, "Using nDPI (%s) [%d thread(s)]\n", ndpi_revision(), num_threads);
 
   //signal(SIGINT, dpisigproc);
 
-  for(i=0; i<num_loops; i++)
+  //for(i=0; i<num_loops; i++)
     test_lib();
 
   if(results_path) free(results_path);

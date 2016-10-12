@@ -26,9 +26,11 @@
     @author Copyright (C) 2004 Alexandre Carmel-Veilleux <acv@miniguru.ca>
 */
 
-#define _GNU_SOURCE
 #include "common.h"
+#include "debug.h"
+#include "portal_thread.h"
 
+#if 0
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,8 +40,7 @@
 #include "../config.h"
 #include "safe.h"
 #include "conf.h"
-#include "debug.h"
-#include "ping_thread.h"
+
 #include "httpd_thread.h"
 #include "util.h"
 #include "centralserver.h"
@@ -47,7 +48,7 @@
 #include "gateway.h"
 #include "simple_http.h"
 #include "cJSON.h"
-#include "portal_thread.h"
+#endif
 
 static int check_n_update_portal(void);
 

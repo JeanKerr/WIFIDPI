@@ -27,14 +27,17 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <unistd.h>
-#include <stdarg.h>
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>

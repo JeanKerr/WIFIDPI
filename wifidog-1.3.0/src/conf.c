@@ -26,7 +26,6 @@
   @author Copyright (C) 2007 Benoit Grégoire, Technologies Coeus inc.
  */
 
-#define _GNU_SOURCE
 #include "common.h"
 
 #include "safe.h"
@@ -127,7 +126,10 @@ typedef enum {
     oSmsFlag,
     oLocalAuthFlag,
     oSemuFlag,
-    oSemuPortalIp
+    oSemuPortalIp,
+    oDpiFlag,
+    oDpiBPF,
+    oDpiLogFile
 } OpCodes;
 
 /** @internal
@@ -206,7 +208,11 @@ static const T_KEYWORD keywords[] = {
     "localauthflag", oLocalAuthFlag}, {
     "semuflag", oSemuFlag}, {
     "semuportalip", oSemuPortalIp}, {
+    "dpiflag", oDpiFlag}, {
+    "dpibpf", oDpiBPF}, {
+    "dpilogfile", oDpiLogFile}, {
 
+    
     /* coco end */
     NULL, oBadOption},};
 
@@ -278,6 +284,7 @@ void config_init(void)
     strncpy(config.httpdusername, DEFAULT_HTTPDUSRNAME, sizeof(config.httpdusername)-1);
     strncpy(config.httpdpassword, DEFAULT_HTTPDPASSWORD, sizeof(config.httpdpassword)-1);
     strncpy(config.version, LIBHTTPD_VERSION, sizeof(config.version)-1);
+    strncpy(config.dpi_bpf, DEFAULT_DPI_BPFFILTER, sizeof(config.dpi_bpf)-1);
 
     
     strncpy(config.auth_servers.name, AUTH_SVR_NAME, sizeof(config.auth_servers.name)-1);
@@ -294,6 +301,7 @@ void config_init(void)
     config.sms_flag = 0;
     config.local_auth_flag = 0;
     config.semu_flag = 0;
+    config.dpi_flag = 0;    /* shutdown dpi defaultly */
     /* coco add */
     config.httpdmaxconn = DEFAULT_HTTPDMAXCONN;
     config.external_web_port = DEFAULT_EXTERNALWEBPORT;
@@ -1308,6 +1316,18 @@ void config_read(const char* filename)
                     break;
                     case oSemuPortalIp:
                         CONFIG_SET(semu_portal_ip, p1);
+                    break;
+                    case oDpiFlag:
+                        if(0==strcmp("true", p1))
+                          config.dpi_flag = 1;
+                        else
+                          config.dpi_flag = 0;
+                    break;
+                    case oDpiBPF:
+                        CONFIG_SET(dpi_bpf, p1);
+                    break;
+                    case oDpiLogFile:
+                        CONFIG_SET(dpi_log_file, p1);
                     break;
 
                 case oBadOption:

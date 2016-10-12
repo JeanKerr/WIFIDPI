@@ -26,7 +26,6 @@
   2006 Benoit Grégoire, Technologies Coeus inc. <bock@step.polymtl.ca>
  */
 
-#define _GNU_SOURCE
 #include "common.h"
 
 #include <sys/wait.h>

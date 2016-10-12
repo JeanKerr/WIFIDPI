@@ -88,8 +88,10 @@ time_t started_time = 0;
 httpd* webserver = NULL;
 httpd* webserverhttps = NULL;
 httpd* extwebserver = NULL;
+T_DPI_PARAM gtDpiParam;
 
 /** @brief Get IP/MAC address of external interface */
+bool get_ext_iface_name(char* extPortBuf, int bufLen);
 bool get_ext_iface_ip(char* extIpaddrBuf, int bufLen);
 bool get_ext_iface_mac(char* extMacBuf, int bufLen);
 
@@ -553,21 +555,27 @@ static void init_signals(void)
 #endif
 }
 
+bool get_ext_iface_name(char* extPortBuf, int bufLen)
+{
+    const T_CONFIG *config = config_get_config();
+    if (!IS_NULL_CONFIG(external_interface)) 
+    {
+        strncpy(extPortBuf, config->external_interface, bufLen-1);
+        return TRUE;
+    }
+    else
+    {
+        return get_ext_iface(extPortBuf, sizeof(bufLen));
+    }
+}
+
 bool get_ext_iface_ip(char* extIpaddrBuf, int bufLen)
 {
     const T_CONFIG *config;
     char ext_interface[MAX_INTERFACE_NAME_LEN]={0};
 
     //LOCK_CONFIG();
-    config = config_get_config();
-    if (!IS_NULL_CONFIG(external_interface)) 
-    {
-        strncpy(ext_interface, config->external_interface, MAX_INTERFACE_NAME_LEN-1);
-    }
-    else
-    {
-        get_ext_iface(ext_interface, sizeof(ext_interface));
-    }
+    get_ext_iface_name(ext_interface, MAX_INTERFACE_NAME_LEN);
 
     if(0==ext_interface[0])
     {
@@ -608,15 +616,7 @@ bool get_ext_iface_mac(char* extMacBuf, int bufLen)
     char ext_interface[MAX_INTERFACE_NAME_LEN]={0};
 
     //LOCK_CONFIG();
-    config = config_get_config();
-    if (!IS_NULL_CONFIG(external_interface)) 
-    {
-        strncpy(ext_interface, config->external_interface, MAX_INTERFACE_NAME_LEN-1);
-    }
-    else
-    {
-        get_ext_iface(ext_interface, sizeof(ext_interface));
-    }
+    get_ext_iface_name(ext_interface, MAX_INTERFACE_NAME_LEN);
 
     if(0==ext_interface[0])
     {
@@ -680,16 +680,6 @@ void writeExcpInfo(const char *format, ...)
     va_end(vlist);
     fputc('\n', temp);
     return;
-}
-
-extern int dpi_main(int argc, char **argv);
-void thread_comm_dpi(void *arg)
-{
-    int argc=8;
-    char* argv[8]={"RhyDpi", "-i", "eth0", "-f", "port 53", "-g", "0", "-q"};
-    
-    printf("argc:%d, argv:%s, %s, %s, %s, %s, %s, %s, %s\n", argc, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
-    dpi_main(argc, argv);
 }
 
 /**@internal
@@ -950,7 +940,12 @@ static void main_loop(void)
     }
 
     debug(LOG_INFO, "pthread_create thread_comm_dpi");
-    result = pthread_create(&tid_dpi_main, NULL, (void *)thread_comm_dpi, NULL);
+    get_ext_iface_name(&gtDpiParam.portName, MAX_INTERFACE_NAME_LEN);
+    strncpy(&gtDpiParam.bpfFilter, config_get_config()->dpi_bpf, sizeof(gtDpiParam.bpfFilter)-1);
+    strncpy(&gtDpiParam.logPath, config_get_config()->dpi_log_file, sizeof(gtDpiParam.logPath)-1);
+    gtDpiParam.dpiFlag = config_get_config()->dpi_flag;
+    debug(LOG_DEBUG, "dpi flag: %d, parameters:%s, %s, %s", gtDpiParam.logFlag, gtDpiParam.portName, gtDpiParam.bpfFilter, gtDpiParam.logPath);
+    result = pthread_create(&tid_dpi_main, NULL, (void *)thread_comm_dpi, &gtDpiParam);
     if (result != 0) {
     	debug(LOG_ERR, "FATAL: Failed to pthread_create(thread_comm_dpi) -exiting");
     	termination_handler(0);
