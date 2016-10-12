@@ -49,7 +49,7 @@ void thread_comm_dpi(void *arg)
             argv[2]=DpiParam->portName;
             argv[4]=DpiParam->bpfFilter;
             argv[6]=DpiParam->logPath;
-            debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s %s %s\n", 
+            debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s\n", 
                            RunRhyDpi ? "Start" : "Stop", 
                            argv[0], argv[1], argv[2], argv[3], 
                            argv[4], argv[5], argv[6], argv[7]);
