@@ -46,7 +46,7 @@
 #include "http.h"
 #include "client_list.h"
 #include "wdctl_thread.h"
-#include "ping_thread.h"
+#include "agent_thread.h"
 #include "portal_thread.h"
 #include "util.h"
 
