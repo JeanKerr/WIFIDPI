@@ -1290,7 +1290,7 @@ void automataUnitTest() {
  **/
 int dpi_main(int argc, char **argv) {
 
-  int i;
+  //int i;
 
   //automataUnitTest();
 
@@ -1305,7 +1305,7 @@ int dpi_main(int argc, char **argv) {
   //signal(SIGINT, dpisigproc);
 
   //for(i=0; i<num_loops; i++)
-    test_lib();
+  test_lib();
 
   if(results_path) free(results_path);
   if(results_file) fclose(results_file);

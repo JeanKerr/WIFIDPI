@@ -29,9 +29,8 @@
 
 #include "common.h"
 #include "debug.h"
-#include "comm_agent_thread.h"
+#include "agent_thread.h"
 
-#if 0
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -52,7 +51,6 @@
 #include "gateway.h"
 #include "simple_http.h"
 #include "cJSON.h"
-#endif
 
 #define SIZEOF_SVCPKT_DIST      (int)RHY_SIZEOF(T_SERVICEPACKETHDR, distinguisher)        /*4*/
 #define SIZEOF_SVCPKT_XID       (int)RHY_SIZEOF(T_SERVICEPACKETHDR, xid)                  /*4*/

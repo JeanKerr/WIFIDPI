@@ -30,8 +30,9 @@ libgateway_a_SOURCES = commandline.c \
 	client_list.c \
 	util.c \
 	wdctl_thread.c \
-	ping_thread.c \
+	agent_thread.c \
 	portal_thread.c \
+        dpi_thread.c \
 	safe.c \
 	httpd_thread.c \
 	simple_http.c \
@@ -53,8 +54,9 @@ noinst_HEADERS = commandline.h \
 	util.h \
 	wdctl_thread.h \
 	wdctl.h \
-	ping_thread.h \
+	agent_thread.h \
 	portal_thread.h \
+        dpi_thread.h 
 	safe.h \
 	httpd_thread.h \
 	simple_http.h \
