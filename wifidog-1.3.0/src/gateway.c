@@ -93,9 +93,6 @@ httpd* webserverhttps = NULL;
 httpd* extwebserver = NULL;
 T_DPI_PARAM gtDpiParam;
 
-/** @brief Get IP/MAC address of external interface */
-bool get_ext_iface_name(char* extPortBuf, int bufLen);
-
 void writeExcpInfo(const char *format, ...);
 
 /* Appends -x, the current PID, and NULL to restartargv
@@ -888,11 +885,11 @@ static void main_loop(void)
     }
 
     debug(LOG_INFO, "pthread_create thread_comm_dpi");
-    get_ext_iface_name(&gtDpiParam.portName, MAX_INTERFACE_NAME_LEN);
-    strncpy(&gtDpiParam.bpfFilter, config_get_config()->dpi_bpf, sizeof(gtDpiParam.bpfFilter)-1);
-    strncpy(&gtDpiParam.logPath, config_get_config()->dpi_log_file, sizeof(gtDpiParam.logPath)-1);
+    get_ext_iface_name(gtDpiParam.portName, MAX_INTERFACE_NAME_LEN);
+    strncpy(gtDpiParam.bpfFilter, config_get_config()->dpi_bpf, sizeof(gtDpiParam.bpfFilter)-1);
+    strncpy(gtDpiParam.logPath, config_get_config()->dpi_log_file, sizeof(gtDpiParam.logPath)-1);
     gtDpiParam.dpiFlag = config_get_config()->dpi_flag;
-    debug(LOG_DEBUG, "dpi flag: %d, parameters:%s, %s, %s", gtDpiParam.logFlag, gtDpiParam.portName, gtDpiParam.bpfFilter, gtDpiParam.logPath);
+    debug(LOG_DEBUG, "dpi flag: %d, parameters:%s, %s, %s", gtDpiParam.dpiFlag, gtDpiParam.portName, gtDpiParam.bpfFilter, gtDpiParam.logPath);
     result = pthread_create(&tid_dpi_main, NULL, (void *)thread_comm_dpi, &gtDpiParam);
     if (result != 0) {
     	debug(LOG_ERR, "FATAL: Failed to pthread_create(thread_comm_dpi) -exiting");
