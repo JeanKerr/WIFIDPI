@@ -1018,10 +1018,14 @@ void dpisigproc(int sig) {
   int thread_id;
 
   if(called) return; else called = 1;
-  RunRhyDpi = 0;
 
-  for(thread_id=0; thread_id<num_threads; thread_id++)
-    breakPcapLoop(thread_id);
+  if(RunRhyDpi)
+  {
+      RunRhyDpi = 0;
+
+      for(thread_id=0; thread_id<num_threads; thread_id++)
+        breakPcapLoop(thread_id);
+  }
 }
 
 
@@ -1290,7 +1294,7 @@ void automataUnitTest() {
  **/
 int dpi_main(int argc, char **argv) {
 
-  int i;
+  //int i;
 
   //automataUnitTest();
 
@@ -1305,7 +1309,7 @@ int dpi_main(int argc, char **argv) {
   //signal(SIGINT, dpisigproc);
 
   //for(i=0; i<num_loops; i++)
-    test_lib();
+  test_lib();
 
   if(results_path) free(results_path);
   if(results_file) fclose(results_file);

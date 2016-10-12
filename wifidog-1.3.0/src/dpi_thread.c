@@ -35,8 +35,8 @@ extern int RunRhyDpi;
 
 void thread_comm_dpi(void *arg)
 {
-    int argc=10;
-    char* argv[10]={"RhyDpi", "-i", NULL/*eth0*/, "-f", NULL/*"udp port 53"*/, "-w", "/dev/null", "-g", "0", "-q"};
+    int argc=8;
+    char* argv[8]={"RhyDpi", "-i", NULL/*eth0*/, "-f", NULL/*"udp port 53"*/, "-w", "/dev/null", "-q"};
     T_DPI_PARAM* DpiParam = arg;
     pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
     pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -51,8 +51,8 @@ void thread_comm_dpi(void *arg)
             argv[6]=DpiParam->logPath;
             debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s %s %s\n", 
                            RunRhyDpi ? "Start" : "Stop", 
-                           argv[0], argv[1], argv[2], argv[3], argv[4], 
-                           argv[5], argv[6], argv[7], argv[8], argv[9]);
+                           argv[0], argv[1], argv[2], argv[3], 
+                           argv[4], argv[5], argv[6], argv[7]);
             dpi_main(argc, argv);
         }
         /* Sleep for 10 seconds... */

@@ -30,7 +30,6 @@
 #include "debug.h"
 #include "portal_thread.h"
 
-#if 0
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -48,7 +47,6 @@
 #include "gateway.h"
 #include "simple_http.h"
 #include "cJSON.h"
-#endif
 
 static int check_n_update_portal(void);
 
