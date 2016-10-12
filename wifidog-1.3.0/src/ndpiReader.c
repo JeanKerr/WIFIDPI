@@ -1304,7 +1304,7 @@ int dpi_main(int argc, char **argv) {
 
   parseOptions(argc, argv);
   
-  debug(LOG_INFO, "Using nDPI (%s) [%d thread(s)]\n", ndpi_revision(), num_threads);
+  debug(LOG_INFO, "Using nDPI (%s) [%d thread(s)]", ndpi_revision(), num_threads);
 
   //signal(SIGINT, dpisigproc);
 
