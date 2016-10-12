@@ -49,15 +49,7 @@ void thread_comm_dpi(void *arg)
             argv[2]=DpiParam->portName;
             argv[4]=DpiParam->bpfFilter;
             argv[6]=DpiParam->logPath;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-            debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s\n", 
-=======
-            debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s %s %s", 
->>>>>>> Stashed changes
-=======
-            debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s\n", 
->>>>>>> c3b8ecc7efd326a75dc4e92f254fb62716d08cf0
+            debug(LOG_INFO, "%s %s:  %s %s %s %s %s %s %s", 
                            RunRhyDpi ? "Start" : "Stop", 
                            argv[0], argv[1], argv[2], argv[3], 
                            argv[4], argv[5], argv[6], argv[7]);
