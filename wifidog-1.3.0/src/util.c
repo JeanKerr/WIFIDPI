@@ -47,7 +47,7 @@
 #include "util.h"
 #include "debug.h"
 #include "pstring.h"
-
+#include "conf.h"
 #include "../config.h"
 
 #define LOCK_GHBN() do { \
