@@ -48,9 +48,12 @@
 #include "wdctl_thread.h"
 #include "agent_thread.h"
 #include "portal_thread.h"
+#include "dpi_thread.h"
 #include "util.h"
 
+#ifndef __USE_GNU
 #define __USE_GNU
+#endif
 #include <link.h>
 #include <dlfcn.h>
 
@@ -92,8 +95,6 @@ T_DPI_PARAM gtDpiParam;
 
 /** @brief Get IP/MAC address of external interface */
 bool get_ext_iface_name(char* extPortBuf, int bufLen);
-bool get_ext_iface_ip(char* extIpaddrBuf, int bufLen);
-bool get_ext_iface_mac(char* extMacBuf, int bufLen);
 
 void writeExcpInfo(const char *format, ...);
 
@@ -555,39 +556,6 @@ static void init_signals(void)
 #endif
 }
 
-bool get_ext_iface_name(char* extPortBuf, int bufLen)
-{
-    const T_CONFIG *config = config_get_config();
-    if (!IS_NULL_CONFIG(external_interface)) 
-    {
-        strncpy(extPortBuf, config->external_interface, bufLen-1);
-        return TRUE;
-    }
-    else
-    {
-        return get_ext_iface(extPortBuf, sizeof(bufLen));
-    }
-}
-
-bool get_ext_iface_ip(char* extIpaddrBuf, int bufLen)
-{
-    const T_CONFIG *config;
-    char ext_interface[MAX_INTERFACE_NAME_LEN]={0};
-
-    //LOCK_CONFIG();
-    get_ext_iface_name(ext_interface, MAX_INTERFACE_NAME_LEN);
-
-    if(0==ext_interface[0])
-    {
-        //UNLOCK_CONFIG();
-        debug(LOG_ERR, "get_ext_iface_ip fatal error: no external interface");
-        return FALSE;
-    }
-    //UNLOCK_CONFIG();
-    
-    return get_iface_ip2(ext_interface, extIpaddrBuf, bufLen);
-}
-
 void get_ext_iface_ip_until_success(char* extIpaddrBuf, int bufLen)
 {
     struct timeval tval;
@@ -609,26 +577,6 @@ void get_ext_iface_ip_until_success(char* extIpaddrBuf, int bufLen)
     }
     debug(LOG_NOTICE, "Get IP of external interface: %s", extIpaddrBuf);
 }
-
-bool get_ext_iface_mac(char* extMacBuf, int bufLen)
-{
-    const T_CONFIG *config;
-    char ext_interface[MAX_INTERFACE_NAME_LEN]={0};
-
-    //LOCK_CONFIG();
-    get_ext_iface_name(ext_interface, MAX_INTERFACE_NAME_LEN);
-
-    if(0==ext_interface[0])
-    {
-        //UNLOCK_CONFIG();
-        debug(LOG_ERR, "get_ext_iface_mac fatal error: no external interface");
-        return FALSE;
-    }
-    //UNLOCK_CONFIG();
-    
-    return get_iface_mac2(ext_interface, extMacBuf, bufLen);
-}
-
 
 void httpdSetWebAccessLog(httpd* server, char* path)
 {

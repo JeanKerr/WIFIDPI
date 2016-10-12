@@ -316,6 +316,56 @@ bool get_iface_mac2(const char *ifName, char* macStr, int bufLen)
     return TRUE;
 }
 
+bool get_ext_iface_ip(char* extIpaddrBuf, int bufLen)
+{
+    char ext_interface[MAX_INTERFACE_NAME_LEN]={0};
+
+    //LOCK_CONFIG();
+    get_ext_iface_name(ext_interface, MAX_INTERFACE_NAME_LEN);
+
+    if(0==ext_interface[0])
+    {
+        //UNLOCK_CONFIG();
+        debug(LOG_ERR, "get_ext_iface_ip fatal error: no external interface");
+        return FALSE;
+    }
+    //UNLOCK_CONFIG();
+    
+    return get_iface_ip2(ext_interface, extIpaddrBuf, bufLen);
+}
+
+bool get_ext_iface_mac(char* extMacBuf, int bufLen)
+{
+    char ext_interface[MAX_INTERFACE_NAME_LEN]={0};
+
+    //LOCK_CONFIG();
+    get_ext_iface_name(ext_interface, MAX_INTERFACE_NAME_LEN);
+
+    if(0==ext_interface[0])
+    {
+        //UNLOCK_CONFIG();
+        debug(LOG_ERR, "get_ext_iface_mac fatal error: no external interface");
+        return FALSE;
+    }
+    //UNLOCK_CONFIG();
+    
+    return get_iface_mac2(ext_interface, extMacBuf, bufLen);
+}
+
+bool get_ext_iface_name(char* extPortBuf, int bufLen)
+{
+    const T_CONFIG *config = config_get_config();
+    if (!IS_NULL_CONFIG(external_interface)) 
+    {
+        strncpy(extPortBuf, config->external_interface, bufLen-1);
+        return TRUE;
+    }
+    else
+    {
+        return get_ext_iface(extPortBuf, sizeof(bufLen));
+    }
+}
+
 bool get_ext_iface(char* ifBuf, int bufLen)
 {
     FILE* input;

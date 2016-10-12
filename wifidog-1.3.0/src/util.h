@@ -62,6 +62,8 @@ bool get_ext_iface_ip(char*, int);
 
 bool get_ext_iface_mac(char*, int);
 
+bool get_ext_iface_name(char* extPortBuf, int bufLen);
+
 /** @brief Initialize the ICMP socket */
 int init_icmp_socket(void);
 
