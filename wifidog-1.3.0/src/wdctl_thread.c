@@ -56,7 +56,7 @@ static void wdctl_statistics(int);
 static void wdctl_stop(int);
 static void wdctl_restart(int);
 static void wdctl_debug(int, const char *);
-static void wdctl_dpi_statistics(int fd, const char *arg)
+static void wdctl_dpi_statistics(int, const char *);
 static void wdctl_dpi(int, const char *);
 
 static int wdctl_socket_server;
