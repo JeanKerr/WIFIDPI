@@ -88,6 +88,11 @@ typedef struct ndpi_id {
 // used memory counters
 u_int32_t current_ndpi_memory = 0, max_ndpi_memory = 0;
 
+typedef struct dpi_stt_data {
+  u_int16_t thread_id;		   // thread_id
+  char* pBuff;                 // pointer to Buffer
+  int BuffLen;
+} dpi_stt_data_t;
 
 /********************** FUNCTIONS ********************* */
 
@@ -440,6 +445,57 @@ static void printFlow(u_int16_t thread_id, struct ndpi_flow_info *flow) {
   }
 }
 
+static void getFlowSttStr(void *user_data, struct ndpi_flow_info *flow)
+{
+    u_int16_t thread_id = ((dpi_stt_data_t *)user_data)->thread_id;
+    char** ppBuff = &((dpi_stt_data_t *)user_data)->pBuff;
+    int* pBuffLen = &((dpi_stt_data_t *)user_data)->BuffLen;
+    *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "\t%u", ++num_flows);
+    *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "\t%s %s%s%s:%u <-> %s%s%s:%u ",
+	    ipProto2Name(flow->protocol),
+	    (flow->ip_version == 6) ? "[" : "",
+	    flow->lower_name,
+	    (flow->ip_version == 6) ? "]" : "",
+	    ntohs(flow->lower_port),
+	    (flow->ip_version == 6) ? "[" : "",
+	    flow->upper_name,
+	    (flow->ip_version == 6) ? "]" : "",
+	    ntohs(flow->upper_port));
+
+    if(flow->vlan_id > 0)
+    {
+        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[VLAN: %u]", flow->vlan_id);
+    }
+    
+    if(flow->detected_protocol.master_protocol) 
+    {
+      char buf[64];
+
+      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u.%u/%s]",
+	      flow->detected_protocol.master_protocol, flow->detected_protocol.protocol,
+	      ndpi_protocol2name(ndpi_thread_info[thread_id].workflow->ndpi_struct,
+				 flow->detected_protocol, buf, sizeof(buf)));
+    } 
+    else
+    {
+      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u/%s]",
+	      flow->detected_protocol.protocol,
+	      ndpi_get_proto_name(ndpi_thread_info[thread_id].workflow->ndpi_struct, flow->detected_protocol.protocol));
+    }
+    *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[%u pkts/%llu bytes]",
+	    flow->packets, (long long unsigned int)flow->bytes);
+
+    if(flow->host_server_name[0] != '\0') 
+        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[Host: %s]", flow->host_server_name);
+    if(flow->ssl.client_certificate[0] != '\0')
+        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[SSL client: %s]", flow->ssl.client_certificate);
+    if(flow->ssl.server_certificate[0] != '\0') 
+        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[SSL server: %s]", flow->ssl.server_certificate);
+    if(flow->bittorent_hash[0] != '\0')
+        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[BT Hash: %s]\n", flow->bittorent_hash);
+
+    *ppBuff = *ppBuff + *pBuffLen;
+}
 
 /**
  * @brief Unknown Proto Walker
@@ -469,6 +525,25 @@ static void node_print_known_proto_walker(const void *node, ndpi_VISIT which, in
     printFlow(thread_id, flow);
 }
 
+static void node_print_unknown_proto_walker2(const void *node, ndpi_VISIT which, int depth, void *user_data) {
+  
+  struct ndpi_flow_info *flow = *(struct ndpi_flow_info**)node;
+
+  if(flow->detected_protocol.protocol != NDPI_PROTOCOL_UNKNOWN) return;
+
+  if((which == ndpi_preorder) || (which == ndpi_leaf)) /* Avoid walking the same node multiple times */
+    getFlowSttStr(user_data, flow);
+}
+
+static void node_print_known_proto_walker2(const void *node, ndpi_VISIT which, int depth, void *user_data) {
+
+  struct ndpi_flow_info *flow = *(struct ndpi_flow_info**)node;
+
+  if(flow->detected_protocol.protocol == NDPI_PROTOCOL_UNKNOWN) return;
+
+  if((which == ndpi_preorder) || (which == ndpi_leaf)) /* Avoid walking the same node multiple times */
+    getFlowSttStr(user_data, flow);
+}
 
 /**
  * @brief Guess Undetected Protocol
@@ -1007,7 +1082,8 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
     int thread_id;
     char buf[32];
     long long unsigned int breed_stats[NUM_BREEDS] = { 0 };
-
+    dpi_stt_data_t t_dpi_stt_data;
+    
     memset(dbgBuf, 0, sizeof(dbgBuf));
 	memset(&cumulative_stats, 0, sizeof(cumulative_stats));
 	
@@ -1052,9 +1128,9 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		cumulative_stats.max_packet_len += ndpi_thread_info[thread_id].workflow->stats.max_packet_len;
     }
 	
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nnDPI Memory statistics:\n");
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tnDPI Memory (once):	   %-13s\n", formatBytes(sizeof(struct ndpi_detection_module_struct), buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFlow Memory (per flow):  %-13s\n", formatBytes(sizeof(struct ndpi_flow_struct), buf, sizeof(buf)));
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nDPI Memory statistics:\n");
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDPI Memory (once):	    %-13s\n", formatBytes(sizeof(struct ndpi_detection_module_struct), buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFlow Memory (per flow):    %-13s\n", formatBytes(sizeof(struct ndpi_flow_struct), buf, sizeof(buf)));
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tActual Memory:		   %-13s\n", formatBytes(current_ndpi_memory, buf, sizeof(buf)));
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPeak Memory:			   %-13s\n", formatBytes(max_ndpi_memory, buf, sizeof(buf)));
 	
@@ -1135,15 +1211,19 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s %13llu bytes\n",
 			   ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, i), breed_stats[i]);
         }	
-	    // printf("\n\nTotal Flow Traffic: %llu (diff: %llu)\n", total_flow_bytes, cumulative_stats.total_ip_bytes-total_flow_bytes);
-	
-	    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n");
+	    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nTotal Flow Traffic: %llu (diff: %llu)\n", total_flow_bytes, cumulative_stats.total_ip_bytes-total_flow_bytes);
 	
 		num_flows = 0;
 		for(thread_id = 0; thread_id < num_threads; thread_id++)
 		{
+		    t_dpi_stt_data.thread_id = thread_id;
 		    for(i=0; i<NUM_ROOTS; i++)
-			    ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_known_proto_walker, &thread_id);
+		    {
+                t_dpi_stt_data.pBuff = dbgBuf + printLen;
+		        t_dpi_stt_data.BuffLen = sizeof(dbgBuf)-1-printLen;
+			    ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_known_proto_walker2, &t_dpi_stt_data);
+			    printLen = t_dpi_stt_data.pBuff-dbgBuf;
+			}
 		}
 	
 		for(thread_id = 0; thread_id < num_threads; thread_id++) 
@@ -1153,6 +1233,22 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 			    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nUndetected flows:%s\n", undetected_flows_deleted ? " (expired flows are not listed below)" : "");
 			}
 		}
+		num_flows = 0;
+		for(thread_id = 0; thread_id < num_threads; thread_id++)
+		{
+  		    t_dpi_stt_data.thread_id = thread_id;
+		    if(ndpi_thread_info[thread_id].workflow->stats.protocol_counter[0] > 0) 
+		    {
+			    for(i=0; i<NUM_ROOTS; i++)
+			    {
+                    t_dpi_stt_data.pBuff = dbgBuf + printLen;
+		            t_dpi_stt_data.BuffLen = sizeof(dbgBuf)-1-printLen;
+		            ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_unknown_proto_walker2, &t_dpi_stt_data);
+		            printLen = t_dpi_stt_data.pBuff-dbgBuf;
+                }
+		    }
+		}
+
 	}
     return dbgBuf;
 }
