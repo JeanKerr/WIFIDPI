@@ -250,7 +250,7 @@ char* get_status_text()
     unsigned int days = 0, hours = 0, minutes = 0, seconds = 0;
     char status[MAX_TEMP_BUFFER_SIZE]={0};
     
-    snprintf(status, sizeof(status)-1, "%s running status: Normal\nVersion: %s\n", config_get_config()->company, config_get_config()->version);
+    snprintf(status, sizeof(status)-1, "%s version: %s\n", config_get_config()->company, config_get_config()->version);
     pstr_cat(pstr, status);
     
     uptime = time(NULL) - started_time;
@@ -271,7 +271,12 @@ char* get_status_text()
         pstr_cat(pstr, "no\n");
     }
 
-    pstr_append_sprintf(pstr, "Clients login sessions: %llu, logout sessions: %llu, logout unauthenticated: %llu, excute fail:%llu\n", 
+    pstr_append_sprintf(pstr, "Dpi feature: %s, bpf: %s\nExternalinterface:%s\n", 
+                        config_get_config()->dpi_flag ? "started" : "stopped",
+                        config_get_config()->dpi_bpf,
+                        config_get_config()->external_interface);
+    
+    pstr_append_sprintf(pstr, "\nClients login sessions: %llu, logout sessions: %llu, logout unauthenticated: %llu, excute fail:%llu\n", 
                               inner_stt.loginCnt, inner_stt.logoutCnt, inner_stt.logoutUnAuthened, inner_stt.logoutExcuteFail);
 
     LOCK_CLIENT_LIST();
