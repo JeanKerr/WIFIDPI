@@ -56,6 +56,7 @@ static void wdctl_statistics(int);
 static void wdctl_stop(int);
 static void wdctl_restart(int);
 static void wdctl_debug(int, const char *);
+static void wdctl_dpi(int, const char *);
 
 static int wdctl_socket_server;
 
@@ -201,6 +202,8 @@ static void* thread_wdctl_handler(void *arg)
         wdctl_restart(fd);
     } else if (strncmp(request, "debug", 5) == 0) {
         wdctl_debug(fd, (request + 6));
+    }else if (strncmp(request, "dpi", 3) == 0) {
+        wdctl_dpi(fd, (request + 4));
     }else {
         debug(LOG_ERR, "Request was not understood!");
     }
@@ -491,4 +494,17 @@ static void wdctl_debug(int fd, const char *arg)
     debug(LOG_DEBUG, "Exiting wdctl_debug...");
 }
 
+static void wdctl_dpi(int fd, const char *arg)
+{
+    debug(LOG_DEBUG, "Entering wdctl_dpi...Argument: %s (@%p)", arg, arg);
+
+    if (strncmp(arg, "start", 5) == 0) {
+        debug(LOG_DEBUG, "Start dpi");
+    }else if (strncmp(arg, "stop", 4) == 0) {
+        debug(LOG_DEBUG, "Stop dpi");
+    }else if (strncmp(arg, "statistics", 10) == 0) {
+        debug(LOG_DEBUG, "Show dpi statistics");
+    }
+    debug(LOG_DEBUG, "Exiting wdctl_dpi...");
+}
 
