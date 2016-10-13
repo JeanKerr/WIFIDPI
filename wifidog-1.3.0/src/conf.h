@@ -330,6 +330,7 @@ void config_set_tcpsock(int sock);
 char* get_portal_version_string(void);
 char* set_portal_version_string(char* newVersion);
 
+void config_set_dpi(int start);
 
 /** @brief Initialise the conf system */
 void config_init(void);

@@ -198,9 +198,9 @@ void parse_commandline2(int argc, char **argv)
         }
         else
         {
-            if (strncmp(*(argv + optind + 1), "start", 5)
-                || strncmp(*(argv + optind + 1), "stop", 4)
-                || strncmp(*(argv + optind + 1), "statistics", 10))
+            if (!strncmp(*(argv + optind + 1), "start", 5)
+                && !strncmp(*(argv + optind + 1), "stop", 4)
+                && !strncmp(*(argv + optind + 1), "statistics", 10))
             {
 				fprintf(stderr, "wdctl: Error dpi parameter \n");
 				usage2(argv[0]);

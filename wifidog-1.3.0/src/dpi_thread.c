@@ -41,10 +41,10 @@ void thread_comm_dpi(void *arg)
     pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
     pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
     struct timespec timeout;
-    
+
+    RunRhyDpi = DpiParam->dpiFlag;
     while (1) {
-        RunRhyDpi = DpiParam->dpiFlag;
-        if(RunRhyDpi)
+        if(DpiParam->dpiFlag && RunRhyDpi)
         {
             argv[2]=DpiParam->portName;
             argv[4]=DpiParam->bpfFilter;

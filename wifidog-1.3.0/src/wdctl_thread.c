@@ -500,8 +500,10 @@ static void wdctl_dpi(int fd, const char *arg)
 
     if (strncmp(arg, "start", 5) == 0) {
         debug(LOG_DEBUG, "Start dpi");
+        config_set_dpi(1);
     }else if (strncmp(arg, "stop", 4) == 0) {
         debug(LOG_DEBUG, "Stop dpi");
+        config_set_dpi(0);
     }else if (strncmp(arg, "statistics", 10) == 0) {
         debug(LOG_DEBUG, "Show dpi statistics");
     }

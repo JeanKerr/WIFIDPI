@@ -271,11 +271,10 @@ char* get_status_text()
         pstr_cat(pstr, "no\n");
     }
 
-    pstr_append_sprintf(pstr, "Dpi feature: %s, bpf: %s\nExternalinterface:%s\n", 
+    pstr_append_sprintf(pstr, "Dpi feature: %s, bpf: %s\n", 
                         config_get_config()->dpi_flag ? "started" : "stopped",
-                        config_get_config()->dpi_bpf,
-                        config_get_config()->external_interface);
-    
+                        config_get_config()->dpi_bpf);
+                        
     pstr_append_sprintf(pstr, "\nClients login sessions: %llu, logout sessions: %llu, logout unauthenticated: %llu, excute fail:%llu\n", 
                               inner_stt.loginCnt, inner_stt.logoutCnt, inner_stt.logoutUnAuthened, inner_stt.logoutExcuteFail);
 

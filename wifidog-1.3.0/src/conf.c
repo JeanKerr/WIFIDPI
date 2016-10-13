@@ -252,10 +252,20 @@ char* get_portal_version_string(void)
 
 char* set_portal_version_string(char* newVersion)
 {
-    printf("set_portal_version_string newVersion:%s\n", newVersion);
+    debug(LOG_INFO, "set_portal_version_string newVersion:%s", newVersion);
     strncpy(portal_version, newVersion, PORTAL_VERSTRING_LEN-1);
     portal_version[PORTAL_VERSTRING_LEN-1]=0;
     return portal_version;
+}
+
+extern int RunRhyDpi;
+void config_set_dpi(int start)
+{
+    RunRhyDpi = start;
+    if(!config.dpi_flag)
+    {
+        debug(LOG_NOTICE, "Dpi subswitch set to %d but won't effect while dpi feature is stopped", start);
+    }
 }
 
 
