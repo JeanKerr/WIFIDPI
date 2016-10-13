@@ -494,6 +494,19 @@ static void wdctl_debug(int fd, const char *arg)
     debug(LOG_DEBUG, "Exiting wdctl_debug...");
 }
 
+static void wdctl_dpi_statistics(int fd, const char *arg)
+{
+	char *stt = NULL;
+	size_t len = 0;
+	
+	stt = get_dpi_stt_text();
+	len = strlen(stt);
+	
+	write_to_socket(fd, stt, len);	 /* XXX Not handling error because we'd just print the same log line. */
+	
+	free(stt);
+}
+
 static void wdctl_dpi(int fd, const char *arg)
 {
     debug(LOG_DEBUG, "Entering wdctl_dpi...Argument: %s (@%p)", arg, arg);
@@ -506,6 +519,7 @@ static void wdctl_dpi(int fd, const char *arg)
         config_set_dpi(0);
     }else if (strncmp(arg, "statistics", 10) == 0) {
         debug(LOG_DEBUG, "Show dpi statistics");
+        wdctl_dpi_statistics(fd);
     }
     debug(LOG_DEBUG, "Exiting wdctl_dpi...");
 }

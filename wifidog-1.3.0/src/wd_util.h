@@ -97,4 +97,6 @@ char* get_status_text(void);
 /** @brief Creates a human-readable paragraph of the inner statistics of process */
 char* get_statistics_text();
 
+/** @brief Creates a human-readable paragraph of the dpi statistics */
+char* get_dpi_stt_text();
 #endif /* _WD_UTIL_H_ */

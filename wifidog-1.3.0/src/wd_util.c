@@ -38,6 +38,8 @@
 
 #include "../config.h"
 extern char* getConnErrSttStr();
+extern char* getDpiStatisticsStr(u_int64_t tot_usec);
+extern struct timeval dpi_begin;
 
 t_inner_stt inner_stt = {0};
 
@@ -228,6 +230,7 @@ bool is_auth_online2(t_auth_serv *auth_server)
     }
 }
 
+extern int RunRhyDpi;
 /* @return A string containing human-readable status text. MUST BE free()d by caller */
 char* get_status_text()
 {
@@ -271,8 +274,8 @@ char* get_status_text()
         pstr_cat(pstr, "no\n");
     }
 
-    pstr_append_sprintf(pstr, "Dpi feature: %s, bpf: %s\n", 
-                        config_get_config()->dpi_flag ? "started" : "stopped",
+    pstr_append_sprintf(pstr, "Dpi feature: %s, subswitch: %d, bpf: %s\n", 
+                        config_get_config()->dpi_flag ? "started" : "stopped", RunRhyDpi,
                         config_get_config()->dpi_bpf);
                         
     pstr_append_sprintf(pstr, "\nClients login sessions: %llu, logout sessions: %llu, logout unauthenticated: %llu, excute fail:%llu\n", 
@@ -379,6 +382,19 @@ char* get_statistics_text()
 
     pstr_append_sprintf(pstr, "%s", client_show_all_list());
     pstr_append_sprintf(pstr, "%s", getConnErrSttStr());
+    return pstr_to_string(pstr);
+}
+
+char* get_dpi_stt_text()
+{
+	struct timeval time_now;
+	u_int64_t tot_usec;
+
+    pstr_t *pstr = pstr_new2(MAX_BUF*3);
+	gettimeofday(&time_now, NULL);
+	tot_usec = time_now.tv_sec*1000000 + time_now.tv_usec - (dpi_begin.tv_sec*1000000 + dpi_begin.tv_usec);
+
+    pstr_append_sprintf(pstr, "%s", getDpiStatisticsStr(tot_usec));
     return pstr_to_string(pstr);
 }
 

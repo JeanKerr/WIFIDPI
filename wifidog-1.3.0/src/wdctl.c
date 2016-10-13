@@ -196,16 +196,14 @@ void parse_commandline2(int argc, char **argv)
             usage2(argv[0]);
             exit(1);
         }
-        else
+        
+        if (strncmp(*(argv + optind + 1), "start", 5)
+            && strncmp(*(argv + optind + 1), "stop", 4)
+            && strncmp(*(argv + optind + 1), "statistics", 10))
         {
-            if (!strncmp(*(argv + optind + 1), "start", 5)
-                && !strncmp(*(argv + optind + 1), "stop", 4)
-                && !strncmp(*(argv + optind + 1), "statistics", 10))
-            {
-				fprintf(stderr, "wdctl: Error dpi parameter \n");
-				usage2(argv[0]);
-				exit(1);
-            }
+            fprintf(stderr, "wdctl: Error dpi parameter \n");
+            usage2(argv[0]);
+            exit(1);
         }
         memset(wdconfig.param, 0, sizeof(wdconfig.param));
         strncpy(wdconfig.param[0], *(argv + optind + 1), WDCTL_MAX_PARAM_LEN-1);
