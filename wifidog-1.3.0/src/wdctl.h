@@ -38,6 +38,7 @@
 #define WDCTL_STOP       5
 #define WDCTL_RESTART    6
 #define WDCTL_DEBUG      7
+#define WDCTL_DPI        8
 
 
 #define WDCTL_MAX_BUF          MAX_BUF

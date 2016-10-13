@@ -68,11 +68,6 @@ void thread_comm_dpi(void *arg)
         /* No longer needs to be locked */
         pthread_mutex_unlock(&cond_mutex);
     }
-
-    while(1)
-    {
-
-    }
 }
 
 

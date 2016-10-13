@@ -46,6 +46,7 @@ static void wdctl_statistics(void);
 static void wdctl_stop(void);
 static void wdctl_restart(void);
 static void wdctl_debug(void);
+static void wdctl_dpi(void);
 
 /** @internal
  * @brief Print usage
@@ -62,12 +63,13 @@ static void usage2(char* process)
     fprintf(stdout, "\n");
     fprintf(stdout, "commands:\n");
     fprintf(stdout, "  login [ip mac phone token record_id]  Set the specified mac or ip connection active\n");
-    fprintf(stdout, "  logout [mac|ip]                    Reset the specified mac or ip connection\n");
-    fprintf(stdout, "  status                             Obtain the status of controlled process\n");
-    fprintf(stdout, "  statistics                         Obtain the inner statistics of controlled process\n");
-    fprintf(stdout, "  stop                               Stop the running controlled process\n");
-    fprintf(stdout, "  restart                            Re-start the running controlled process (without disconnecting active users!)\n");
-    fprintf(stdout, "  debug [level]                      Set log level <0-8> of the running controlled process\n");
+    fprintf(stdout, "  logout [mac|ip]                       Reset the specified mac or ip connection\n");
+    fprintf(stdout, "  status                                Obtain the status of controlled process\n");
+    fprintf(stdout, "  statistics                            Obtain the inner statistics of controlled process\n");
+    fprintf(stdout, "  stop                                  Stop the running controlled process\n");
+    fprintf(stdout, "  restart                               Re-start the running controlled process (without disconnecting active users!)\n");
+    fprintf(stdout, "  debug [level]                         Set log level <0-8> of the running controlled process\n");
+    fprintf(stdout, "  dpi [start|stop|statistics]           Set dpi command\n");
     fprintf(stdout, "\n");
 }
 
@@ -184,6 +186,18 @@ void parse_commandline2(int argc, char **argv)
             usage2(argv[0]);
             exit(1);
         }
+    }
+    else if (strcmp(*(argv + optind), "dpi") == 0)
+    {
+        wdconfig.command = WDCTL_DPI;
+        if ((argc - (optind + 1)) <= 0) 
+        {
+            fprintf(stderr, "wdctl: Error: You must specify 1 dpi parameter\n");
+            usage2(argv[0]);
+            exit(1);
+        }
+        memset(wdconfig.param, 0, sizeof(wdconfig.param));
+        strncpy(wdconfig.param[0], *(argv + optind + 1), WDCTL_MAX_PARAM_LEN-1);
     }
     else
     {
@@ -422,6 +436,30 @@ static void wdctl_debug(void)
     close(sock);
 }
 
+static void wdctl_dpi(void)
+{
+    int sock;
+    char buffer[WDCTL_MAX_BUF];
+    char request[WDCTL_MAX_CMD_LEN]={0};
+    ssize_t len;
+
+    sock = connect_to_server(wdconfig.socket);
+
+    strncpy(request, "dpi ", WDCTL_MAX_CMD_LEN-1);
+    strncat(request, wdconfig.param[0], WDCTL_MAX_PARAM_LEN-1);
+    strncat(request, "\r\n\r\n", WDCTL_MAX_CMD_LEN+WDCTL_MAX_PARAM_NUM*WDCTL_MAX_PARAM_LEN - 1);
+
+    send_request(sock, request);
+
+    while ((len = read(sock, buffer, sizeof(buffer) - 1)) > 0) {
+        buffer[len] = '\0';
+        fprintf(stdout, "%s", buffer);
+    }
+
+    shutdown(sock, 2);
+    close(sock);
+}
+
 int main(int argc, char **argv)
 {
 
@@ -456,6 +494,9 @@ int main(int argc, char **argv)
 
     case WDCTL_DEBUG:
         wdctl_debug();
+        break;
+    case WDCTL_DPI:
+        wdctl_dpi();
         break;
 
     default:
