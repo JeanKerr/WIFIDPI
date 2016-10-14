@@ -1,7 +1,7 @@
 Package: wifidog
 Priority: optional
 Section: net
-Depends: libpthread, iptables, iptables-mod-nat, iptables-mod-ipopt
+Depends: libpthread, iptables, iptables-mod-nat, iptables-mod-ipopt, libpcap, libjson-c, libndpi
 Description: WiFiDog is a complete and embeddable captive portal
         solution for wireless community groups or individuals who
         wish to open a free Hotspot while still preventing abuse
