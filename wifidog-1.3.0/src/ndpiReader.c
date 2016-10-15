@@ -1206,9 +1206,10 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s %13llu bytes\n",
 			   ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, i), breed_stats[i]);
         }	
+
 	    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nTotal Flow Traffic: %llu (diff: %llu)\n", 
 	              (long long unsigned int)total_flow_bytes, (long long unsigned int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
-	
+
 		num_flows = 0;
 		for(thread_id = 0; thread_id < num_threads; thread_id++)
 		{
