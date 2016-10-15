@@ -469,18 +469,13 @@ static void getFlowSttStr(void *user_data, struct ndpi_flow_info *flow)
     
     if(flow->detected_protocol.master_protocol) 
     {
-      char buf[64];
-
-      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u.%u/%s]",
-	      flow->detected_protocol.master_protocol, flow->detected_protocol.protocol,
-	      ndpi_protocol2name(ndpi_thread_info[thread_id].workflow->ndpi_struct,
-				 flow->detected_protocol, buf, sizeof(buf)));
+      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u.%u]",
+	      flow->detected_protocol.master_protocol, flow->detected_protocol.protocol);
     } 
     else
     {
-      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u/%s]",
-	      flow->detected_protocol.protocol,
-	      ndpi_get_proto_name(ndpi_thread_info[thread_id].workflow->ndpi_struct, flow->detected_protocol.protocol));
+      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u]",
+	      flow->detected_protocol.protocol);
     }
     *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[%u pkts/%llu bytes]",
 	    flow->packets, (long long unsigned int)flow->bytes);
@@ -1211,8 +1206,8 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s %13llu bytes\n",
 			   ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, i), breed_stats[i]);
         }	
-	    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nTotal Flow Traffic: %llu (diff: %llu)\n", total_flow_bytes, cumulative_stats.total_ip_bytes-total_flow_bytes);
-	
+		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nTotal Flow Traffic: %llu (diff: %llu)\n", 
+	              (long long unsigned int)total_flow_bytes, (long long unsigned int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
 		num_flows = 0;
 		for(thread_id = 0; thread_id < num_threads; thread_id++)
 		{
