@@ -5,8 +5,8 @@ Maintainer: Philippe April <philippe@ilesansfil.org>
 
 Package: wifidog
 Architecture: any
-Depends: iptables, modutils, grep, mawk | awk
-Provides: libhttpd
+Depends: iptables, modutils, grep,libpcap, libjson-c, libndpi, mawk | awk
+Provides: libhttpd, libpcap, libjson-c, libndpi
 Description: The WiFi Guard Dog client
  The WiFi Gaurd Dog project is a complete and embeddable captive portal
  solution for wireless community groups or individuals who wish to open
