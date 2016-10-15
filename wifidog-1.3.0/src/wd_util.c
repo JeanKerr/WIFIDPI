@@ -390,7 +390,7 @@ char* get_dpi_stt_text()
 	struct timeval time_now;
 	u_int64_t tot_usec;
 
-    pstr_t *pstr = pstr_new2(MAX_BUF*3);
+    pstr_t *pstr = pstr_new2(MAX_BUF*10);
 	gettimeofday(&time_now, NULL);
 	tot_usec = time_now.tv_sec*1000000 + time_now.tv_usec - (dpi_begin.tv_sec*1000000 + dpi_begin.tv_usec);
 
