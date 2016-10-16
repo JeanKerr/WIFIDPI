@@ -448,8 +448,8 @@ static void printFlow(u_int16_t thread_id, struct ndpi_flow_info *flow) {
 static void getFlowSttStr(void *user_data, struct ndpi_flow_info *flow)
 {
     //u_int16_t thread_id = ((dpi_stt_data_t *)user_data)->thread_id;
-    char** ppBuff = &((dpi_stt_data_t *)user_data)->pBuff;
-    int* pBuffLen = &((dpi_stt_data_t *)user_data)->BuffLen;
+    char** ppBuff = &(((dpi_stt_data_t *)user_data)->pBuff);
+    int* pBuffLen = &(((dpi_stt_data_t *)user_data)->BuffLen);
     *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "\t%u", ++num_flows);
     *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "\t%s %s%s%s:%u <-> %s%s%s:%u ",
 	    ipProto2Name(flow->protocol),
