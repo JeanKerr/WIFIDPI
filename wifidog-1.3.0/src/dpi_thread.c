@@ -44,6 +44,8 @@ void thread_comm_dpi(void *arg)
 
     RunRhyDpi = DpiParam->dpiFlag;
     while (1) {
+		debug(LOG_TRACE, "thread_comm_dpi DpiFlag:%d, Subswitch:%d\n", DpiParam->dpiFlag, RunRhyDpi);
+
         if(DpiParam->dpiFlag && RunRhyDpi)
         {
             argv[2]=DpiParam->portName;

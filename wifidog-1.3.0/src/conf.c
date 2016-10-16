@@ -1334,6 +1334,12 @@ void config_read(const char* filename)
                           config.dpi_flag = 0;
                     break;
                     case oDpiBPF:
+                        char *p2=p1;
+                        while(*p2!='\0')
+                        {
+                          if(*p2=='*') *p2=' ';     /* Take '*' as BPF original seperator and replace to space */
+                          p2++;
+                        }
                         CONFIG_SET(dpi_bpf, p1);
                     break;
                     case oDpiLogFile:

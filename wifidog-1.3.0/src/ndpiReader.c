@@ -1204,12 +1204,12 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
     {
         if(breed_stats[i] > 0) 
         {
-		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s %13llu bytes\n",
+		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s     %-13llu bytes\n",
 			   ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, i), breed_stats[i]);
         }	
     }
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nTotal Flow Traffic: %llu bytes (diff: %llu bytes)\n", 
-	              (long long unsigned int)total_flow_bytes, (long long int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
+	              (long long unsigned int)total_flow_bytes, (long long unsigned int)(total_flow_bytes - cumulative_stats.total_ip_bytes));
 
     printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Known flows:\n");
 	num_flows = 0;
