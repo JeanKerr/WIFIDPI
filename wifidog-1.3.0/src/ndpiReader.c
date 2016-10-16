@@ -1126,11 +1126,11 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		cumulative_stats.max_packet_len += ndpi_thread_info[thread_id].workflow->stats.max_packet_len;
     }
 	
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "RhyDPI Memory statistics:\n");
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDPI Memory (once):      %-13s\n", formatBytes(sizeof(struct ndpi_detection_module_struct), buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFlow Memory (per flow): %-13s\n", formatBytes(sizeof(struct ndpi_flow_struct), buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tActual Memory:          %-13s\n", formatBytes(current_ndpi_memory, buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPeak Memory:            %-13s\n", formatBytes(max_ndpi_memory, buf, sizeof(buf)));
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "DPI Memory statistics:\n");
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDPI Memory (once):       %-13s\n", formatBytes(sizeof(struct ndpi_detection_module_struct), buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFlow Memory (per flow):  %-13s\n", formatBytes(sizeof(struct ndpi_flow_struct), buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tActual Memory:           %-13s\n", formatBytes(current_ndpi_memory, buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPeak Memory:             %-13s\n", formatBytes(max_ndpi_memory, buf, sizeof(buf)));
 	
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nTraffic statistics:\n");
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tEthernet bytes:          %-13llu (includes ethernet CRC/IFC/trailer)\n",
@@ -1169,15 +1169,15 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		float traffic_duration;
 		if (live_capture) traffic_duration = tot_usec;
 		else traffic_duration = (pcap_end.tv_sec*1000000 + pcap_end.tv_usec) - (pcap_start.tv_sec*1000000 + pcap_start.tv_usec);
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tnDPI throughput:     %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDPI throughput:          %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
 		t = (float)(cumulative_stats.ip_packet_count*1000000)/(float)traffic_duration;
 		b = (float)(cumulative_stats.total_wire_bytes * 8 *1000000)/(float)traffic_duration;
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic throughput:  %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic duration:    %.3f sec\n", traffic_duration/1000000);
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic throughput:      %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic duration:        %.3f sec\n", traffic_duration/1000000);
     }
 	
     if(enable_protocol_guess)
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tGuessed flow protos: %-13u\n", cumulative_stats.guessed_flow_protocols);
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tGuessed flow protos:     %-13u\n", cumulative_stats.guessed_flow_protocols);
 
 	  
     printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nDetected protocols:\n");
@@ -1209,7 +1209,7 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
         }	
     }
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nTotal Flow Traffic: %llu bytes (diff: %llu bytes)\n", 
-	              (long long unsigned int)total_flow_bytes, (long long unsigned int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
+	              (long long unsigned int)total_flow_bytes, (long long int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
 
     printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Known flows:\n");
 	num_flows = 0;
