@@ -1469,7 +1469,7 @@ void * processing_thread(void *_thread_id) {
  pcap_loop:
   runPcapLoop(thread_id);
 
-  if(playlist_fp[thread_id] != NULL) { /* playlist: read next file */
+  if(RunRhyDpi && playlist_fp[thread_id] != NULL) { /* playlist: read next file */
     char filename[256];
 
     if(getNextPcapFileFromPlaylist(thread_id, filename, sizeof(filename)) == 0 &&
@@ -1554,7 +1554,7 @@ int dpi_main(int argc, char **argv) {
 
   parseOptions(argc, argv);
   
-  debug(LOG_INFO, "Using nDPI (%s) [%d thread(s)]", ndpi_revision(), num_threads);
+  debug(LOG_INFO, "Using DPI (%s) [%d thread(s)]", ndpi_revision(), num_threads);
 
   //signal(SIGINT, dpisigproc);
 
