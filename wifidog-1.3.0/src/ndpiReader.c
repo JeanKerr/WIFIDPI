@@ -1248,8 +1248,7 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 /**
  * @brief Force a pcap_dispatch() or pcap_loop() call to return
  */
-static void breakPcapLoop(u_int16_t thread_id) {
-
+void breakPcapLoop(u_int16_t thread_id) {
   if(ndpi_thread_info[thread_id].workflow->pcap_handle != NULL) {
     pcap_breakloop(ndpi_thread_info[thread_id].workflow->pcap_handle);
   }
