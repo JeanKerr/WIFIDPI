@@ -448,10 +448,11 @@ static void printFlow(u_int16_t thread_id, struct ndpi_flow_info *flow) {
 static void getFlowSttStr(void *user_data, struct ndpi_flow_info *flow)
 {
     //u_int16_t thread_id = ((dpi_stt_data_t *)user_data)->thread_id;
+    int len=0;
     char** ppBuff = &(((dpi_stt_data_t *)user_data)->pBuff);
     int* pBuffLen = &(((dpi_stt_data_t *)user_data)->BuffLen);
-    *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "\t%u", ++num_flows);
-    *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "\t%s %s%s%s:%u <-> %s%s%s:%u ",
+    len+=snprintf((*ppBuff + len), *pBuffLen-len, "\t%u", ++num_flows);
+    len+=snprintf((*ppBuff + len), *pBuffLen-len, "\t%s %s%s%s:%u <-> %s%s%s:%u ",
 	    ipProto2Name(flow->protocol),
 	    (flow->ip_version == 6) ? "[" : "",
 	    flow->lower_name,
@@ -464,32 +465,33 @@ static void getFlowSttStr(void *user_data, struct ndpi_flow_info *flow)
 
     if(flow->vlan_id > 0)
     {
-        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[VLAN: %u]", flow->vlan_id);
+        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[VLAN: %u]", flow->vlan_id);
     }
     
     if(flow->detected_protocol.master_protocol) 
     {
-      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u.%u]",
+      len+=snprintf((*ppBuff + len), *pBuffLen-len, "[proto: %u.%u]",
 	      flow->detected_protocol.master_protocol, flow->detected_protocol.protocol);
     } 
     else
     {
-      *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[proto: %u]",
+      len+=snprintf((*ppBuff + len), *pBuffLen-len, "[proto: %u]",
 	      flow->detected_protocol.protocol);
     }
-    *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[%u pkts/%llu bytes]",
+    len+=snprintf((*ppBuff + len), *pBuffLen-len, "[%u pkts/%llu bytes]",
 	    flow->packets, (long long unsigned int)flow->bytes);
 
     if(flow->host_server_name[0] != '\0') 
-        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[Host: %s]", flow->host_server_name);
+        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[Host: %s]", flow->host_server_name);
     if(flow->ssl.client_certificate[0] != '\0')
-        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[SSL client: %s]", flow->ssl.client_certificate);
+        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[SSL client: %s]", flow->ssl.client_certificate);
     if(flow->ssl.server_certificate[0] != '\0') 
-        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[SSL server: %s]", flow->ssl.server_certificate);
+        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[SSL server: %s]", flow->ssl.server_certificate);
     if(flow->bittorent_hash[0] != '\0')
-        *pBuffLen-=snprintf((*ppBuff + *pBuffLen), *pBuffLen, "[BT Hash: %s]\n", flow->bittorent_hash);
+        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[BT Hash: %s]\n", flow->bittorent_hash);
 
-    *ppBuff = *ppBuff + *pBuffLen;
+    *ppBuff = *ppBuff + len;
+    *pBuffLen=*pBuffLen-len;
 }
 
 /**
