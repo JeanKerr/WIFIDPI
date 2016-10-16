@@ -1211,7 +1211,7 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nTotal Flow Traffic: %llu bytes (diff: %llu bytes)\n", 
 	              (long long unsigned int)total_flow_bytes, (long long unsigned int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
 
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Known flows:\n"
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Known flows:\n");
 	num_flows = 0;
 	for(thread_id = 0; thread_id < num_threads; thread_id++)
 	{
@@ -1225,7 +1225,7 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		}
 	}
 
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Unknown flows:\n"
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Unknown flows:\n");
 	num_flows = 0;
 	for(thread_id = 0; thread_id < num_threads; thread_id++)
 	{
