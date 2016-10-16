@@ -488,8 +488,9 @@ static void getFlowSttStr(void *user_data, struct ndpi_flow_info *flow)
     if(flow->ssl.server_certificate[0] != '\0') 
         len+=snprintf((*ppBuff + len), *pBuffLen-len, "[SSL server: %s]", flow->ssl.server_certificate);
     if(flow->bittorent_hash[0] != '\0')
-        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[BT Hash: %s]\n", flow->bittorent_hash);
+        len+=snprintf((*ppBuff + len), *pBuffLen-len, "[BT Hash: %s]", flow->bittorent_hash);
 
+    len+=snprintf((*ppBuff + len), *pBuffLen-len, "\n");
     *ppBuff = *ppBuff + len;
     *pBuffLen=*pBuffLen-len;
 }
@@ -1070,7 +1071,7 @@ static void printResults(u_int64_t tot_usec) {
 
 char* getDpiStatisticsStr(u_int64_t tot_usec)
 {
-    static char dbgBuf[10*MAX_BUF-2]={0};
+    static char dbgBuf[3*MAX_BUF-2]={0};
     int printLen = 0;
     u_int32_t i;
     u_int64_t total_flow_bytes = 0;
@@ -1125,40 +1126,40 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		cumulative_stats.max_packet_len += ndpi_thread_info[thread_id].workflow->stats.max_packet_len;
     }
 	
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nDPI Memory statistics:\n");
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDPI Memory (once):	    %-13s\n", formatBytes(sizeof(struct ndpi_detection_module_struct), buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFlow Memory (per flow):    %-13s\n", formatBytes(sizeof(struct ndpi_flow_struct), buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tActual Memory:		   %-13s\n", formatBytes(current_ndpi_memory, buf, sizeof(buf)));
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPeak Memory:			   %-13s\n", formatBytes(max_ndpi_memory, buf, sizeof(buf)));
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "RhyDPI Memory statistics:\n");
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDPI Memory (once):      %-13s\n", formatBytes(sizeof(struct ndpi_detection_module_struct), buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFlow Memory (per flow): %-13s\n", formatBytes(sizeof(struct ndpi_flow_struct), buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tActual Memory:          %-13s\n", formatBytes(current_ndpi_memory, buf, sizeof(buf)));
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPeak Memory:            %-13s\n", formatBytes(max_ndpi_memory, buf, sizeof(buf)));
 	
 	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nTraffic statistics:\n");
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tEthernet bytes: 	   %-13llu (includes ethernet CRC/IFC/trailer)\n",
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tEthernet bytes:          %-13llu (includes ethernet CRC/IFC/trailer)\n",
 			 (long long unsigned int)cumulative_stats.total_wire_bytes);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDiscarded bytes:	   %-13llu\n",
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tDiscarded bytes:         %-13llu\n",
 			 (long long unsigned int)cumulative_stats.total_discarded_bytes);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tIP packets: 		   %-13llu of %llu packets total\n",
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tIP packets:              %-13llu of %llu packets total\n",
 			 (long long unsigned int)cumulative_stats.ip_packet_count,
 			 (long long unsigned int)cumulative_stats.raw_packet_count);
 		  /* In order to prevent Floating point exception in case of no traffic*/
     if(cumulative_stats.total_ip_bytes && cumulative_stats.raw_packet_count)
 		avg_pkt_size = (unsigned int)(cumulative_stats.total_ip_bytes/cumulative_stats.raw_packet_count);
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tIP bytes:			   %-13llu (avg pkt size %u bytes)\n",
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tIP bytes:                %-13llu (avg pkt size %u bytes)\n",
 			 (long long unsigned int)cumulative_stats.total_ip_bytes,avg_pkt_size);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tUnique flows:		   %-13u\n", cumulative_stats.ndpi_flow_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tUnique flows:            %-13u\n", cumulative_stats.ndpi_flow_count);
 	
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTCP Packets:		   %-13lu\n", (unsigned long)cumulative_stats.tcp_count);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tUDP Packets:		   %-13lu\n", (unsigned long)cumulative_stats.udp_count);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tVLAN Packets:		   %-13lu\n", (unsigned long)cumulative_stats.vlan_count);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tMPLS Packets:		   %-13lu\n", (unsigned long)cumulative_stats.mpls_count);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPPPoE Packets:		   %-13lu\n", (unsigned long)cumulative_stats.pppoe_count);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFragmented Packets:    %-13lu\n", (unsigned long)cumulative_stats.fragmented_count);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tMax Packet size:	   %-13u\n",   cumulative_stats.max_packet_len);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len < 64:	   %-13lu\n", (unsigned long)cumulative_stats.packet_len[0]);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 64-128:	   %-13lu\n", (unsigned long)cumulative_stats.packet_len[1]);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 128-256:    %-13lu\n", (unsigned long)cumulative_stats.packet_len[2]);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 256-1024:   %-13lu\n", (unsigned long)cumulative_stats.packet_len[3]);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 1024-1500:  %-13lu\n", (unsigned long)cumulative_stats.packet_len[4]);
-	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len > 1500:	   %-13lu\n", (unsigned long)cumulative_stats.packet_len[5]);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTCP Packets:             %-13lu\n", (unsigned long)cumulative_stats.tcp_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tUDP Packets:             %-13lu\n", (unsigned long)cumulative_stats.udp_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tVLAN Packets:            %-13lu\n", (unsigned long)cumulative_stats.vlan_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tMPLS Packets:            %-13lu\n", (unsigned long)cumulative_stats.mpls_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPPPoE Packets:           %-13lu\n", (unsigned long)cumulative_stats.pppoe_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tFragmented Packets:      %-13lu\n", (unsigned long)cumulative_stats.fragmented_count);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tMax Packet size:         %-13u\n",   cumulative_stats.max_packet_len);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len < 64:         %-13lu\n", (unsigned long)cumulative_stats.packet_len[0]);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 64-128:       %-13lu\n", (unsigned long)cumulative_stats.packet_len[1]);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 128-256:      %-13lu\n", (unsigned long)cumulative_stats.packet_len[2]);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 256-1024:     %-13lu\n", (unsigned long)cumulative_stats.packet_len[3]);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len 1024-1500:    %-13lu\n", (unsigned long)cumulative_stats.packet_len[4]);
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tPacket Len > 1500:       %-13lu\n", (unsigned long)cumulative_stats.packet_len[5]);
 	
     if(tot_usec > 0)
     {
@@ -1168,18 +1169,18 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		float traffic_duration;
 		if (live_capture) traffic_duration = tot_usec;
 		else traffic_duration = (pcap_end.tv_sec*1000000 + pcap_end.tv_usec) - (pcap_start.tv_sec*1000000 + pcap_start.tv_usec);
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tnDPI throughput:		 %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tnDPI throughput:     %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
 		t = (float)(cumulative_stats.ip_packet_count*1000000)/(float)traffic_duration;
 		b = (float)(cumulative_stats.total_wire_bytes * 8 *1000000)/(float)traffic_duration;
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic throughput:	 %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic duration: 	 %.3f sec\n", traffic_duration/1000000);
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic throughput:  %s pps / %s/sec\n", formatPackets(t, buf), formatTraffic(b, 1, buf1));
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tTraffic duration:    %.3f sec\n", traffic_duration/1000000);
     }
 	
     if(enable_protocol_guess)
-		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tGuessed flow protos:	 %-13u\n", cumulative_stats.guessed_flow_protocols);
+		printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\tGuessed flow protos: %-13u\n", cumulative_stats.guessed_flow_protocols);
 
 	  
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nDetected protocols:\n");
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nDetected protocols:\n");
     for(i = 0; i <= ndpi_get_num_supported_protocols(ndpi_thread_info[0].workflow->ndpi_struct); i++)
     {
 		ndpi_protocol_breed_t breed = ndpi_get_proto_breed(ndpi_thread_info[0].workflow->ndpi_struct, i);
@@ -1188,8 +1189,7 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		{
 		    breed_stats[breed] += (long long unsigned int)cumulative_stats.protocol_counter_bytes[i];
 
-		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s packets: %-13llu bytes: %-13llu "
-			   "flows: %-13u\n",
+		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s packets: %-13llu bytes: %-13llu flows: %-13u\n",
 			   ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i),
 			   (long long unsigned int)cumulative_stats.protocol_counter[i],
 			   (long long unsigned int)cumulative_stats.protocol_counter_bytes[i],
@@ -1199,8 +1199,7 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
         total_flow_bytes += cumulative_stats.protocol_counter_bytes[i];
     }
 	  
-    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nProtocol statistics:\n");
-	
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nProtocol statistics:\n");
     for(i=0; i < NUM_BREEDS; i++) 
     {
         if(breed_stats[i] > 0) 
@@ -1208,47 +1207,41 @@ char* getDpiStatisticsStr(u_int64_t tot_usec)
 		    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\t%-20s %13llu bytes\n",
 			   ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, i), breed_stats[i]);
         }	
-
-	    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nTotal Flow Traffic: %llu (diff: %llu)\n", 
+    }
+	printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\nTotal Flow Traffic: %llu bytes (diff: %llu bytes)\n", 
 	              (long long unsigned int)total_flow_bytes, (long long unsigned int)(cumulative_stats.total_ip_bytes-total_flow_bytes));
 
-		num_flows = 0;
-		for(thread_id = 0; thread_id < num_threads; thread_id++)
-		{
-		    t_dpi_stt_data.thread_id = thread_id;
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Known flows:\n"
+	num_flows = 0;
+	for(thread_id = 0; thread_id < num_threads; thread_id++)
+	{
+	    t_dpi_stt_data.thread_id = thread_id;
+	    for(i=0; i<NUM_ROOTS; i++)
+	    {
+            t_dpi_stt_data.pBuff = dbgBuf + printLen;
+	        t_dpi_stt_data.BuffLen = sizeof(dbgBuf)-1-printLen;
+		    ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_known_proto_walker2, &t_dpi_stt_data);
+		    printLen = t_dpi_stt_data.pBuff-dbgBuf;
+		}
+	}
+
+    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "Unknown flows:\n"
+	num_flows = 0;
+	for(thread_id = 0; thread_id < num_threads; thread_id++)
+	{
+        t_dpi_stt_data.thread_id = thread_id;
+	    if(ndpi_thread_info[thread_id].workflow->stats.protocol_counter[0] > 0) 
+	    {
 		    for(i=0; i<NUM_ROOTS; i++)
 		    {
                 t_dpi_stt_data.pBuff = dbgBuf + printLen;
-		        t_dpi_stt_data.BuffLen = sizeof(dbgBuf)-1-printLen;
-			    ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_known_proto_walker2, &t_dpi_stt_data);
-			    printLen = t_dpi_stt_data.pBuff-dbgBuf;
-			}
-		}
-	
-		for(thread_id = 0; thread_id < num_threads; thread_id++) 
-		{
-		    if(ndpi_thread_info[thread_id].workflow->stats.protocol_counter[0 /* 0 = Unknown */] > 0)
-		    {	
-			    printLen+=snprintf((dbgBuf + printLen), sizeof(dbgBuf)-1-printLen, "\n\nUndetected flows:%s\n", undetected_flows_deleted ? " (expired flows are not listed below)" : "");
-			}
-		}
-		num_flows = 0;
-		for(thread_id = 0; thread_id < num_threads; thread_id++)
-		{
-  		    t_dpi_stt_data.thread_id = thread_id;
-		    if(ndpi_thread_info[thread_id].workflow->stats.protocol_counter[0] > 0) 
-		    {
-			    for(i=0; i<NUM_ROOTS; i++)
-			    {
-                    t_dpi_stt_data.pBuff = dbgBuf + printLen;
-		            t_dpi_stt_data.BuffLen = sizeof(dbgBuf)-1-printLen;
-		            ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_unknown_proto_walker2, &t_dpi_stt_data);
-		            printLen = t_dpi_stt_data.pBuff-dbgBuf;
-                }
-		    }
-		}
-
+	            t_dpi_stt_data.BuffLen = sizeof(dbgBuf)-1-printLen;
+	            ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], node_print_unknown_proto_walker2, &t_dpi_stt_data);
+	            printLen = t_dpi_stt_data.pBuff-dbgBuf;
+            }
+	    }
 	}
+	
     return dbgBuf;
 }
 
