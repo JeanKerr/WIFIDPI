@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ ! $1 ]; then
-  OPENWRT_BASE_DIR="../trunk-openwrt/openwrt"
+  OPENWRT_BASE_DIR="../trunk-openwrt2/openwrt"
 else
   OPENWRT_BASE_DIR="$1"
 fi  
