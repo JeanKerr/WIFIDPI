@@ -259,12 +259,31 @@ char* set_portal_version_string(char* newVersion)
 }
 
 extern int RunRhyDpi;
+extern void breakPcapLoop(u_int16_t thread_id);
 void config_set_dpi(int start)
 {
-    RunRhyDpi = start;
+	int thread_id;
+
     if(!config.dpi_flag)
     {
         debug(LOG_NOTICE, "Dpi subswitch set to %d but won't effect while dpi feature is stopped", start);
+        return;
+    }
+
+    if(!!start==!!RunRhyDpi)
+    {
+        debug(LOG_NOTICE, "Dpi subswitch set to %d but won't effect while it was already %d", start, RunRhyDpi);
+        return;
+    }
+    
+    RunRhyDpi = start;
+    debug(LOG_NOTICE, "Dpi subswitch set to %d", start);
+    if(0==RunRhyDpi)
+    {
+        for(thread_id=0; thread_id<num_threads; thread_id++)
+        {
+            breakPcapLoop(thread_id);
+        }
     }
 }
 
