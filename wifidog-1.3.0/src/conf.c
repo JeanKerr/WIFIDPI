@@ -259,6 +259,7 @@ char* set_portal_version_string(char* newVersion)
 }
 
 extern int RunRhyDpi;
+extern u_int8_t num_threads;
 extern void breakPcapLoop(u_int16_t thread_id);
 void config_set_dpi(int start)
 {

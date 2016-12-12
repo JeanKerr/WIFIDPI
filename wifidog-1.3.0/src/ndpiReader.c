@@ -55,7 +55,7 @@ static u_int8_t enable_protocol_guess = 1, verbose = 0, nDPI_traceLevel = 0, jso
 static u_int16_t decode_tunnels = 0;
 static u_int16_t num_loops = 1;
 static u_int8_t quiet_mode = 1;
-static u_int8_t num_threads = 1;
+u_int8_t num_threads = 1;
 int RunRhyDpi = 0;
 #ifdef linux
 static int core_affinity[MAX_NUM_READER_THREADS];
